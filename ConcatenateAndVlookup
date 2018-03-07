@@ -1,0 +1,85 @@
+Sub Vlookupandupdate()
+'this macro works by updating values in the EF and MN range it checks values in the AB range along with KL range to concatenate the values in E and M range then proceeds to verify the same in F and N range
+' you can use a button to trigger this macro
+'
+Application.ScreenUpdating = False
+  
+  Dim WS As Worksheet, LO As ListObject
+  For Each WS In Worksheets
+    For Each LO In WS.ListObjects
+      LO.Unlist
+    Next
+  Next
+'Dim sht As Worksheet
+
+Dim Lrow As Single
+
+For Each WS In Worksheets
+WS.Activate
+Lrow = WS.Range("A" & Rows.Count).End(xlUp).Row
+Cells(2, 5).Formula = "= CONCATENATE(A2, ""-"", B2)"
+'MsgBox Lrow
+'With
+Sheets(WS.Index).Range("E2:E" & Lrow).FillDown
+'       .Range("D2:D" & LastRow).FillDown
+'
+Columns("E:E").Select
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    ActiveSheet.Paste
+    Application.CutCopyMode = False
+
+'End With
+LrowK = WS.Range("K" & Rows.Count).End(xlUp).Row
+Cells(2, 13).Formula = "= CONCATENATE(k2, ""-"", l2)"
+Sheets(WS.Index).Range("M2:M" & LrowK).FillDown
+Columns("M:M").Select
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    ActiveSheet.Paste
+    Application.CutCopyMode = False
+
+Cells(2, 14).Formula = "=VLOOKUP(M2,E:E,1,0)"
+Sheets(WS.Index).Range("N2:N" & LrowK).FillDown
+
+Columns("N:N").Select
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    ActiveSheet.Paste
+    Application.CutCopyMode = False
+    
+    
+Cells(2, 6).Formula = "=VLOOKUP(E2,M:M,1,0)"
+Sheets(WS.Index).Range("F2:F" & Lrow).FillDown
+
+Columns("F:F").Select
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    ActiveSheet.Paste
+    Application.CutCopyMode = False '
+
+ActiveSheet.Range("E1,M1").Value = "Concatenated Value"
+ActiveSheet.Range("F1,N1").Value = "Present in Other Extracted values"
+
+Cells.Replace What:="#N/A", Replacement:="Not Present in Data Set", LookAt _
+        :=xlPart, SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    Application.CutCopyMode = False
+Range("D1").Select
+    Selection.Copy
+    Range("E1,M1,F1,N1,k1,l1").Select
+    Selection.PasteSpecial Paste:=xlPasteFormats, Operation:=xlNone, _
+        SkipBlanks:=False, Transpose:=False
+    'Application.CutCopyMode = False
+Application.Goto Cells(1, 1), True
+Columns.AutoFit
+Next
+
+Application.ScreenUpdating = True
+
+End Sub
+
